@@ -29,5 +29,5 @@ export class ProjectFilterDto {
   })
   @IsOptional()
   @IsString({ message: 'El nombre debe ser un texto' })
-  name?: string;
+  text?: string;
 }

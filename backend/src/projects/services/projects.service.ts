@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 
 import { Project, ProjectDocument } from '../schemas/project.schema';
 import { ProjectDto, UpdateProjectDto } from '../dtos/project.dto';
+import { ProjectFilterDto } from '../dtos/project-filter.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -18,7 +19,7 @@ export class ProjectsService {
 
   async findAll(
     userId: string,
-    filters: { status?: string; priority?: string, text?: string },
+    filters: ProjectFilterDto,
   ) {
     const query: any = {
       developersIds: userId,
