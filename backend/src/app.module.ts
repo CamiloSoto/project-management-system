@@ -1,10 +1,50 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+
+import { ConfigModule, ConfigType } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { ProjectsModule } from './projects/projects.module';
+import { TasksModule } from './tasks/tasks.module';
+import * as Joi from 'joi';
+
+import configuration from './config/configuration';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: ['.env'],
+      isGlobal: true,
+      load: [configuration],
+      validationSchema: Joi.object({
+        PORT: Joi.number(),
+        MONGO_URI: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
+        JWT_EXPIRATION: Joi.string().required(),
+        JWT_REFRESH_SECRET: Joi.string().required(),
+        JWT_REFRESH_EXPIRATION: Joi.string().required(),
+      }),
+      validationOptions: {
+        allowUnknown: true,
+        abortEarly: true,
+      },
+    }),
+    MongooseModule.forRootAsync({
+      useFactory: (configService: ConfigType<typeof configuration>) => {
+        const { uri } = configService.mongo;
+
+        return {
+          uri,
+        };
+      },
+      inject: [configuration.KEY],
+    }),
+    UsersModule,
+    AuthModule,
+    ProjectsModule,
+    TasksModule,
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
