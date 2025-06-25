@@ -9,6 +9,8 @@ import InputText from "../inputs/InputText";
 
 import useProject from "../../hooks/useProject";
 import useUser from "../../hooks/useUser.ts";
+import InputSearch from "../inputs/InputSearch.tsx";
+import {errorAlert, errorsAlert, successAlert} from "../../helpers/alert.helper.ts";
 
 interface Props {
     projectId?: string;
@@ -17,7 +19,7 @@ interface Props {
 const ProjectModal: React.FC<Props> = ({projectId}) => {
     const [show, setShow] = useState(false);
 
-    const {getProjectById, projectSelected} = useProject();
+    const {getProjectById, projectSelected, postProject} = useProject();
     const {userList, getUserList} = useUser();
 
     const formik = useFormik({
@@ -28,21 +30,46 @@ const ProjectModal: React.FC<Props> = ({projectId}) => {
             priority: "",
             startDate: "",
             endDate: "",
-            managerId: "",
+            managerId: {value: "", label: ""},
             developersIds: [],
         },
-        validationSchema: yup.object({}),
-        onSubmit: async (values) => {
+        validationSchema: yup.object({
+            name: yup.string().required("campo requerido"),
+            description: yup.string(),
+            status: yup.string().required("campor requerido"),
+            priority: yup.string().required("campor requerido"),
+            startDate: yup.string().required("campor requerido"),
+            endDate: yup.string().required("campor requerido"),
+            managerId: yup.object().required("campo requerido"),
+            developersIds: yup.array().of(yup.object()),
+        }),
+        onSubmit: async (values, {setSubmitting}) => {
+            let managerId = values?.managerId?.value;
+            let developersIds = values?.developersIds?.map((dev: any) => dev.value);
+            const body = {...values, managerId, developersIds};
+
             if (projectId) {
                 // actualizar
             } else {
-                // crear
+                try {
+                    await postProject(body);
+                    await successAlert("Proyecto creado exitosamente");
+                    formik.resetForm();
+                    handleClose();
+                } catch (err: any) {
+                    if (err.status === 400) {
+                        const errors = err.response?.data?.message;
+                        await errorsAlert(errors)
+                    }
+                    if (!err.status) {
+                        await errorAlert("Estamos presentando problemas, intente mas tarde")
+                    }
+                } finally {
+                    setSubmitting(false);
+                }
             }
-            console.log(values);
         },
     });
-
-    console.log(userList);
 
     useEffect(() => {
         if (projectId) {
@@ -112,6 +139,21 @@ const ProjectModal: React.FC<Props> = ({projectId}) => {
                                         <small className="text-danger">{formik.errors.priority}</small>
                                     )}
                                 </div>
+
+                                <InputSearch
+                                    id="managerId"
+                                    label="Dueño"
+                                    options={userList?.map((user: any) => ({value: user?._id, label: user.name}))}
+                                    formik={formik}
+                                />
+
+                                <InputSearch
+                                    id="developersIds"
+                                    label="Colaboradores"
+                                    options={userList?.map((user: any) => ({value: user?._id, label: user.name}))}
+                                    formik={formik}
+                                    multi={true}
+                                />
 
                                 <InputText id="startDate" label="Fecha inicio" type="date" formik={formik}/>
                                 <InputText id="endDate" label="Fecha fin" type="date" formik={formik}/>

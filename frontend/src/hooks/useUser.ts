@@ -11,10 +11,7 @@ const useUser = () => {
     const getUserList = () => {
         try {
             findUserList()
-                .then((res: any) => {
-                    dispatch(loadUserList(res));
-                    console.log(res);
-                });
+                .then((res: any) => dispatch(loadUserList(res)));
         } catch (error) {
             throw error;
         }
@@ -23,7 +20,7 @@ const useUser = () => {
     const postUser = async (user: any) => {
         try {
             const record = await createUser(user);
-            await getUserList();
+            getUserList();
             return record;
         } catch (error) {
             throw error;
@@ -33,7 +30,7 @@ const useUser = () => {
     const putUser = async (user: any) => {
         try {
             const record = await updateUser(user);
-            await getUserList();
+            getUserList();
             return record;
         } catch (error) {
             throw error;
