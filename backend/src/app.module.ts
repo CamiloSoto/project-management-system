@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigType } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 import * as Joi from 'joi';
 
 import configuration from './config/configuration';
@@ -23,6 +24,16 @@ import configuration from './config/configuration';
         allowUnknown: true,
         abortEarly: true,
       },
+    }),
+    MongooseModule.forRootAsync({
+      useFactory: (configService: ConfigType<typeof configuration>) => {
+        const { uri } = configService.mongo;
+
+        return {
+          uri,
+        };
+      },
+      inject: [configuration.KEY],
     }),
   ],
   controllers: [],
