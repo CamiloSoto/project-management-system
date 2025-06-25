@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import InputText from "../../components/inputs/InputText.tsx";
 import axiosClient from "../../config/axiosClient";
 import useAuth from "../../hooks/useAuth";
-import {errorAlert, successAlert} from "../../../helpers/alert.helper.ts";
+import {errorAlert, successAlert} from "../../helpers/alert.helper.ts";
 
 const LoginPage = () => {
     const {login} = useAuth();

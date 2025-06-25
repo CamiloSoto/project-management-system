@@ -1,7 +1,7 @@
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
 
-import {errorAlert, successAlert} from "../../../helpers/alert.helper.ts";
+import {errorAlert, successAlert} from "../../helpers/alert.helper.ts";
 import InputText from "../../components/inputs/InputText.tsx";
 import axiosClient from "../../config/axiosClient";
 import useAuth from "../../hooks/useAuth";
