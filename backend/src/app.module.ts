@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { UsersModule } from './users/users.module';
 import * as Joi from 'joi';
 
 import configuration from './config/configuration';
@@ -35,6 +36,7 @@ import configuration from './config/configuration';
       },
       inject: [configuration.KEY],
     }),
+    UsersModule,
   ],
   controllers: [],
   providers: [],
