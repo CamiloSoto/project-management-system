@@ -16,7 +16,7 @@ export class TasksService {
 
   async findAll(projectId: string, filters: TaskFilterDto) {
     const query: any = {
-      developersIds: projectId,
+      projectId: projectId,
     };
 
     if (filters.status) {
