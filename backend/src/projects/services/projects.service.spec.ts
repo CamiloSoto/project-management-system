@@ -68,7 +68,7 @@ describe('ProjectsService', () => {
       const filters = {
         status: 'planning',
         priority: 'high',
-        text: '',
+        text: 'proyecto',
       };
 
       const userId = 'user123';
@@ -79,6 +79,10 @@ describe('ProjectsService', () => {
         developersIds: userId,
         status: 'planning',
         priority: 'high',
+        $or: [
+          { name: { $regex: 'proyecto', $options: 'i' } },
+          { description: { $regex: 'proyecto', $options: 'i' } },
+        ],
       });
 
       expect(model.populate).toHaveBeenCalledWith('managerId developersIds');
