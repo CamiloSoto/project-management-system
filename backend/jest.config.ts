@@ -14,6 +14,7 @@ const config: Config = {
   coveragePathIgnorePatterns: [
     '\\.module\\.ts$',
     '\\.decorator\\.ts$',
+    'configuration.ts',
     'main.ts',
   ],
 };
