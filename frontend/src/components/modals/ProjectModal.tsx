@@ -8,6 +8,7 @@ import InputTextArea from "../inputs/InputTextArea";
 import InputText from "../inputs/InputText";
 
 import useProject from "../../hooks/useProject";
+import useUser from "../../hooks/useUser.ts";
 
 interface Props {
     projectId?: string;
@@ -17,6 +18,7 @@ const ProjectModal: React.FC<Props> = ({projectId}) => {
     const [show, setShow] = useState(false);
 
     const {getProjectById, projectSelected} = useProject();
+    const {userList, getUserList} = useUser();
 
     const formik = useFormik({
         initialValues: {
@@ -40,11 +42,15 @@ const ProjectModal: React.FC<Props> = ({projectId}) => {
         },
     });
 
+    console.log(userList);
+
     useEffect(() => {
         if (projectId) {
             getProjectById(`${projectId}`);
         }
     }, [projectId]);
+
+    useEffect(() => getUserList, []);
 
     useEffect(() => {
         if (projectSelected?._id) {
