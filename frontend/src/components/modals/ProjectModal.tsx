@@ -5,12 +5,12 @@ import {useFormik} from "formik";
 import * as yup from "yup";
 
 import InputTextArea from "../inputs/InputTextArea";
+import InputSearch from "../inputs/InputSearch.tsx";
 import InputText from "../inputs/InputText";
 
+import {errorAlert, errorsAlert, successAlert} from "../../helpers/alert.helper.ts";
 import useProject from "../../hooks/useProject";
 import useUser from "../../hooks/useUser.ts";
-import InputSearch from "../inputs/InputSearch.tsx";
-import {errorAlert, errorsAlert, successAlert} from "../../helpers/alert.helper.ts";
 
 interface Props {
     projectId?: string;
@@ -19,7 +19,7 @@ interface Props {
 const ProjectModal: React.FC<Props> = ({projectId}) => {
     const [show, setShow] = useState(false);
 
-    const {getProjectById, projectSelected, postProject} = useProject();
+    const {getProjectById, projectSelected, postProject, putProject} = useProject();
     const {userList, getUserList} = useUser();
 
     const formik = useFormik({
@@ -49,7 +49,21 @@ const ProjectModal: React.FC<Props> = ({projectId}) => {
             const body = {...values, managerId, developersIds};
 
             if (projectId) {
-                // actualizar
+                try {
+                    await putProject(body, projectId);
+                    await successAlert("Proyecto actualizado exitosamente");
+                    handleClose();
+                } catch (err: any) {
+                    if (err.status === 400) {
+                        const errors = err.response?.data?.message;
+                        await errorsAlert(errors)
+                    }
+                    if (!err.status) {
+                        await errorAlert("Estamos presentando problemas, intente mas tarde")
+                    }
+                } finally {
+                    setSubmitting(false);
+                }
             } else {
                 try {
                     await postProject(body);
@@ -85,15 +99,24 @@ const ProjectModal: React.FC<Props> = ({projectId}) => {
             formik.setFieldValue("description", projectSelected.description);
             formik.setFieldValue("status", projectSelected.status);
             formik.setFieldValue("priority", projectSelected.priority);
-            //formik.setFieldValue("managerId", projectSelected.managerId?._id);
-            //formik.setFieldValue("developersIds", );
+            formik.setFieldValue("managerId", {
+                value: projectSelected.managerId?._id,
+                label: projectSelected.managerId?.name
+            });
+            formik.setFieldValue("developersIds", projectSelected.developersIds?.map((dev: any) => {
+                const user = userList?.find((user: any) => user?._id === dev);
+                return {value: dev, label: user?.name}
+            }) || []);
+
             formik.setFieldValue("startDate", projectSelected.startDate.split("T")[0]);
             formik.setFieldValue("endDate", projectSelected.endDate.split("T")[0]);
         }
     }, [projectSelected]);
 
     const handleClose = () => {
-        formik.resetForm();
+        if (!projectId) {
+            formik.resetForm();
+        }
         setShow(false);
     }
 

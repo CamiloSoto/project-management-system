@@ -30,3 +30,13 @@ export const createProject = async (project: any) => {
         throw error;
     }
 }
+
+export const updateProject = async (project: any, id: string) => {
+    try {
+        axiosInterceptor();
+        const response = await axiosClient.put(`/projects/${id}`, project);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}

@@ -1,13 +1,12 @@
 import {useDispatch, useSelector} from "react-redux";
 
-import {findAllProjectList, findProjectById, createProject} from "../services/projectService";
+import {findAllProjectList, findProjectById, createProject, updateProject} from "../services/projectService";
 import {loadProjectList, loadProjectSelected} from "../slices/projectSlice"
 
 const useProject = () => {
     const dispatch = useDispatch();
 
-    // @ts-ignore
-    const {projectList, projectSelected} = useSelector((state) => state.project);
+    const {projectList, projectSelected} = useSelector((state: any) => state.project);
 
     const getProjectList = async () => {
         try {
@@ -38,6 +37,16 @@ const useProject = () => {
         }
     }
 
+    const putProject = async (project: any, id: string) => {
+        try {
+            const record = await updateProject(project, id);
+            await getProjectList();
+            return record;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     const setProjectSelected = async (project: any) => {
         dispatch(loadProjectSelected(project));
     }
@@ -48,7 +57,8 @@ const useProject = () => {
         postProject,
         getProjectList,
         getProjectById,
-        setProjectSelected
+        setProjectSelected,
+        putProject
     }
 }
 
