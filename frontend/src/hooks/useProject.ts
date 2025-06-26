@@ -33,7 +33,7 @@ const useProject = () => {
     const postProject = async (project: any) => {
         try {
             const record = await createProject(project);
-            await getProjectList();
+            getProjectList();
             return record;
         } catch (error) {
             throw error;
@@ -43,7 +43,7 @@ const useProject = () => {
     const putProject = async (project: any, id: string) => {
         try {
             const record = await updateProject(project, id);
-            await getProjectList();
+            getProjectList();
             return record;
         } catch (error) {
             throw error;
@@ -53,7 +53,7 @@ const useProject = () => {
     const deleteProject = async (id: string) => {
         try {
             const record = await removeProject(id);
-            await getProjectList();
+            getProjectList();
             return record;
         } catch (error) {
             throw error;

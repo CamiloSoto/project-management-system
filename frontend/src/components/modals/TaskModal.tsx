@@ -1,16 +1,18 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 
 import {Modal, Button, Card} from 'react-bootstrap';
-import {useFormik} from "formik";
-import * as yup from "yup";
 
-import {errorAlert, errorsAlert, successAlert} from "../../helpers/alert.helper";
+import {questionAlert, successAlert} from "../../helpers/alert.helper";
+
+import validateHttpError from "../../helpers/http-errors";
 import InputTextArea from "../inputs/InputTextArea";
+import InputSelect from "../inputs/InputSelect";
 import InputSearch from "../inputs/InputSearch";
 import InputText from "../inputs/InputText";
+
+import useTaskForm from "../../hooks/useTaskForm";
 import useTask from "../../hooks/useTask";
 import useUser from "../../hooks/useUser";
-import InputSelect from "../inputs/InputSelect.tsx";
 
 interface Props {
     projectId: string;
@@ -19,90 +21,38 @@ interface Props {
 const TaskModal: React.FC<Props> = ({projectId}) => {
     const [show, setShow] = useState(false);
 
-    const {postTask, taskSelected, setTaskSelected, putTask, getTaskListByProject} = useTask()
+    const {postTask, taskSelected, setTaskSelected, putTask, getTaskListByProject, deleteTask} = useTask()
     const {userList} = useUser();
 
-    const formik = useFormik({
-        initialValues: {
-            title: "",
-            description: "",
-            status: "todo",
-            priority: "medium",
-            assignedTo: null,
-            estimatedHours: 0,
-            actualHours: 0,
-            dueDate: ""
-        },
-        validationSchema: yup.object({
-            title: yup.string().required("requerido"),
-            description: yup.string(),
-            status: yup.string().required("requerido"),
-            priority: yup.string().oneOf(["low", "medium", "high"], "requerido").required("requerido"),
-            assignedTo: yup.object({
-                value: yup.string().required("requerido"),
-                label: yup.string(),
-            }).required("requerido"),
-            estimatedHours: yup.number(),
-            actualHours: yup.number(),
-            dueDate: yup.string()
-        }),
-        onSubmit: async (values: any, {setSubmitting}) => {
-            const body = {...values, projectId, assignedTo: values?.assignedTo?.value};
-            if (taskSelected?._id) {
-                try {
-                    await putTask({...body, _id: taskSelected?._id});
-                    await successAlert("Tarea actualizada exitosamente");
-                    formik.resetForm();
-                    handleClose();
-                } catch (err: any) {
-                    if (err.status === 400) {
-                        const errors = err.response?.data?.message;
-                        await errorsAlert(errors)
-                    }
-                    if (!err.status) {
-                        await errorAlert("Estamos presentando problemas, intente mas tarde")
-                    }
-                } finally {
-                    setSubmitting(false);
-                }
-            } else {
-                try {
-                    await postTask(body, projectId);
-                    await successAlert("Tarea creada exitosamente");
-                    formik.resetForm();
-                    handleClose();
-                } catch (err: any) {
-                    if (err.status === 400) {
-                        const errors = err.response?.data?.message;
-                        await errorsAlert(errors)
-                    }
-                    if (!err.status) {
-                        await errorAlert("Estamos presentando problemas, intente mas tarde")
-                    }
-                } finally {
-                    setSubmitting(false);
-                }
-            }
-            getTaskListByProject(projectId);
-        }
-    })
-
-    useEffect(() => {
+    const onSubmit = async (values: any, {setSubmitting}: any) => {
+        const body = {...values, projectId, assignedTo: values?.assignedTo?.value};
         if (taskSelected?._id) {
-            formik.setFieldValue("title", taskSelected.title);
-            formik.setFieldValue("description", taskSelected.description);
-            formik.setFieldValue("status", taskSelected.status);
-            formik.setFieldValue("priority", taskSelected.priority);
-            formik.setFieldValue("assignedTo", {
-                value: taskSelected.assignedTo?._id,
-                label: taskSelected.assignedTo?.name
-            });
-            formik.setFieldValue("estimatedHours", taskSelected.estimatedHours);
-            formik.setFieldValue("actualHours", taskSelected.actualHours);
-            formik.setFieldValue("dueDate", taskSelected.dueDate.split("T")[0]);
-            handleShow();
+            try {
+                await putTask({...body, _id: taskSelected?._id});
+                await successAlert("Tarea actualizada exitosamente");
+                handleClose();
+            } catch (err: any) {
+                await validateHttpError(err);
+            } finally {
+                setSubmitting(false);
+            }
+        } else {
+            try {
+                await postTask(body, projectId);
+                await successAlert("Tarea creada exitosamente");
+                handleClose();
+            } catch (err: any) {
+                await validateHttpError(err);
+            } finally {
+                setSubmitting(false);
+            }
         }
-    }, [taskSelected]);
+        getTaskListByProject(projectId);
+    }
+
+    const handleShow = () => setShow(true);
+
+    const formik = useTaskForm(onSubmit, handleShow);
 
     const handleClose = () => {
         formik.resetForm();
@@ -110,9 +60,21 @@ const TaskModal: React.FC<Props> = ({projectId}) => {
         setShow(false);
     }
 
-    const handleShow = () => setShow(true);
+    const removeProject = async () => {
+        await questionAlert("Seguro que desea eliminar esta tarea?")
+            .then(async ({isConfirmed}) => {
+                if (isConfirmed) {
+                    try {
+                        await deleteTask(taskSelected?._id, projectId);
+                        setTaskSelected(null);
+                        await successAlert("Tarea eliminada exitosamente");
+                    } catch (err: any) {
+                        await validateHttpError(err);
+                    }
+                }
+            });
+    }
 
-    // @ts-ignore
     return (
         <>
             <Button variant="primary" onClick={handleShow}>
@@ -150,14 +112,19 @@ const TaskModal: React.FC<Props> = ({projectId}) => {
                                 <InputText id="actualHours" label="Horas actuales" type="number" formik={formik}/>
                                 <InputText id="dueDate" label="Fecha terminacion" type="date" formik={formik}/>
                             </Card.Body>
-                            <Card.Footer className="d-flex justify-content-end">
+                            <Card.Footer className="d-flex justify-content-end gap-3">
+                                {
+                                    taskSelected?._id ?
+                                        <Button variant="danger" type="button" onClick={removeProject}>
+                                            Eliminar
+                                        </Button> : null
+                                }
                                 <Button variant="secondary" type="submit" disabled={formik.isSubmitting}>
                                     Guardar
                                 </Button>
                             </Card.Footer>
                         </Card>
                     </form>
-
                 </Modal.Body>
             </Modal>
         </>
