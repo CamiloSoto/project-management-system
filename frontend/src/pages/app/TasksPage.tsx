@@ -8,6 +8,7 @@ import ProjectModal from "../../components/modals/ProjectModal";
 import TaskModal from "../../components/modals/TaskModal";
 import useProject from "../../hooks/useProject";
 import useUser from "../../hooks/useUser";
+import TaskFilter from "../../components/filters/TaskFilter.tsx";
 
 const statuses = ['todo', 'in_progress', 'review', 'done'];
 const statusLabels: Record<string, string> = {
@@ -44,7 +45,7 @@ const TasksPage = () => {
     }, []);
 
     useEffect(() => {
-        if (taskList?.length > 0) {
+        if (taskList) {
             const grouped: Record<string, any[]> = {
                 todo: [],
                 in_progress: [],
@@ -105,6 +106,8 @@ const TasksPage = () => {
                     <TaskModal projectId={`${projectId}`}/>
                 </div>
             </div>
+
+            <TaskFilter/>
 
             <div className="row">
                 {statuses.map((status) => (

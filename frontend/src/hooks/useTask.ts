@@ -1,6 +1,6 @@
 import {useDispatch, useSelector} from "react-redux";
 
-import {createTask, findAllTasksByProject, updateTask} from "../services/taskService";
+import {createTask, findAllTasksByProject, removeTask, updateTask} from "../services/taskService";
 import {loadTaskList, loadTaskSelected} from "../slices/taskSlice"
 
 const useTask = () => {
@@ -8,9 +8,9 @@ const useTask = () => {
 
     const {taskSelected, taskList} = useSelector((state: any) => state.task);
 
-    const getTaskListByProject = (projectId: string) => {
+    const getTaskListByProject = (projectId: string, params = {}) => {
         try {
-            findAllTasksByProject(projectId).then((res: any) => dispatch(loadTaskList(res)));
+            findAllTasksByProject(projectId, params).then((res: any) => dispatch(loadTaskList(res)));
         } catch (error) {
             return [];
         }
@@ -34,6 +34,16 @@ const useTask = () => {
         }
     }
 
+    const deleteTask = async (id: string, projectId: string) => {
+        try {
+            const record = await removeTask(id);
+            getTaskListByProject(`${projectId}`);
+            return record;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     const setTaskSelected = (task: any | null) => {
         dispatch(loadTaskSelected(task));
     }
@@ -44,7 +54,8 @@ const useTask = () => {
         getTaskListByProject,
         postTask,
         putTask,
-        setTaskSelected
+        setTaskSelected,
+        deleteTask
     }
 }
 

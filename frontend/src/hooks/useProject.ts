@@ -1,6 +1,12 @@
 import {useDispatch, useSelector} from "react-redux";
 
-import {findAllProjectList, findProjectById, createProject, updateProject} from "../services/projectService";
+import {
+    findAllProjectList,
+    findProjectById,
+    createProject,
+    updateProject,
+    removeProject
+} from "../services/projectService";
 import {loadProjectList, loadProjectSelected} from "../slices/projectSlice"
 
 const useProject = () => {
@@ -8,20 +14,17 @@ const useProject = () => {
 
     const {projectList, projectSelected} = useSelector((state: any) => state.project);
 
-    const getProjectList = async () => {
+    const getProjectList = (params = {}) => {
         try {
-            const result = await findAllProjectList();
-            dispatch(loadProjectList(result));
+            findAllProjectList(params).then((result: any) => dispatch(loadProjectList(result)));
         } catch (error) {
             throw error;
         }
     }
 
-    const getProjectById = async (projectId: string) => {
+    const getProjectById = (projectId: string) => {
         try {
-            const record = await findProjectById(projectId);
-            dispatch(loadProjectSelected(record));
-            return record;
+            findProjectById(projectId).then((record: any) => dispatch(loadProjectSelected(record)));
         } catch (error) {
             throw error;
         }
@@ -30,7 +33,7 @@ const useProject = () => {
     const postProject = async (project: any) => {
         try {
             const record = await createProject(project);
-            await getProjectList();
+            getProjectList();
             return record;
         } catch (error) {
             throw error;
@@ -40,7 +43,17 @@ const useProject = () => {
     const putProject = async (project: any, id: string) => {
         try {
             const record = await updateProject(project, id);
-            await getProjectList();
+            getProjectList();
+            return record;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    const deleteProject = async (id: string) => {
+        try {
+            const record = await removeProject(id);
+            getProjectList();
             return record;
         } catch (error) {
             throw error;
@@ -58,7 +71,8 @@ const useProject = () => {
         getProjectList,
         getProjectById,
         setProjectSelected,
-        putProject
+        putProject,
+        deleteProject
     }
 }
 

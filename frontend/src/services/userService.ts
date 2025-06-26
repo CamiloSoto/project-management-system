@@ -15,21 +15,19 @@ export const findUserList = async () => {
 export const createUser = async (user: any) => {
     try {
         axiosInterceptor();
-        const res = await axiosClient.post(`/tasks`, user);
+        const res = await axiosClient.post(`/users`, user);
         return res.data;
     } catch (err) {
-        console.log("err:", err);
-        return null;
+        throw err;
     }
 }
 
 export const updateUser = async (user: any) => {
     try {
         axiosInterceptor();
-        const res = await axiosClient.put(`/tasks/${user._id}`, user);
+        const res = await axiosClient.put(`/users/${user._id}`, user);
         return res.data;
     } catch (err) {
-        console.log("err:", err);
-        return null;
+        throw err;
     }
 }

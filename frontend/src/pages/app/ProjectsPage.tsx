@@ -1,9 +1,9 @@
 import {useEffect} from "react";
 
-
+import ProjectFilter from "../../components/filters/ProjectFilter.tsx";
 import ProjectTable from "../../components/tables/ProjectTable.tsx";
-import useProject from "../../hooks/useProject";
 import ProjectModal from "../../components/modals/ProjectModal.tsx";
+import useProject from "../../hooks/useProject";
 
 const ProjectsPage = () => {
     const {getProjectList} = useProject();
@@ -20,6 +20,7 @@ const ProjectsPage = () => {
                     <ProjectModal/>
                 </div>
             </div>
+            <ProjectFilter/>
 
             <ProjectTable/>
         </>

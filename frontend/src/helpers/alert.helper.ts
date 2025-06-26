@@ -12,6 +12,21 @@ export const successAlert = (message: string) => {
     })
 }
 
+export const questionAlert = (message: string) => {
+    return Swal.fire({
+        icon: 'question',
+        title: message,
+        confirmButtonText: "Continuar",
+        cancelButtonText: "Cancelar",
+        showCancelButton: true,
+        customClass: {
+            confirmButton: 'btn btn-primary',
+            cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+    })
+}
+
 export const errorAlert = (message: string) => {
     return Swal.fire({
         icon: 'error',
