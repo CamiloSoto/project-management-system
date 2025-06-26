@@ -10,6 +10,7 @@ import InputSearch from "../inputs/InputSearch";
 import InputText from "../inputs/InputText";
 import useTask from "../../hooks/useTask";
 import useUser from "../../hooks/useUser";
+import InputSelect from "../inputs/InputSelect.tsx";
 
 interface Props {
     projectId: string;
@@ -25,8 +26,8 @@ const TaskModal: React.FC<Props> = ({projectId}) => {
         initialValues: {
             title: "",
             description: "",
-            status: "",
-            priority: "",
+            status: "todo",
+            priority: "medium",
             assignedTo: null,
             estimatedHours: 0,
             actualHours: 0,
@@ -36,7 +37,7 @@ const TaskModal: React.FC<Props> = ({projectId}) => {
             title: yup.string().required("requerido"),
             description: yup.string(),
             status: yup.string().required("requerido"),
-            priority: yup.string().required("requerido"),
+            priority: yup.string().oneOf(["low", "medium", "high"], "requerido").required("requerido"),
             assignedTo: yup.object({
                 value: yup.string().required("requerido"),
                 label: yup.string(),
@@ -92,7 +93,10 @@ const TaskModal: React.FC<Props> = ({projectId}) => {
             formik.setFieldValue("description", taskSelected.description);
             formik.setFieldValue("status", taskSelected.status);
             formik.setFieldValue("priority", taskSelected.priority);
-            formik.setFieldValue("assignedTo", {value: taskSelected.assignedTo?._id, label: taskSelected.assignedTo?.name});
+            formik.setFieldValue("assignedTo", {
+                value: taskSelected.assignedTo?._id,
+                label: taskSelected.assignedTo?.name
+            });
             formik.setFieldValue("estimatedHours", taskSelected.estimatedHours);
             formik.setFieldValue("actualHours", taskSelected.actualHours);
             formik.setFieldValue("dueDate", taskSelected.dueDate.split("T")[0]);
@@ -125,32 +129,17 @@ const TaskModal: React.FC<Props> = ({projectId}) => {
                                 <InputText id="title" label="Titulo" formik={formik}/>
                                 <InputTextArea id="description" label="Descripcion" formik={formik}/>
 
-                                <div className="mb-3">
-                                    <label htmlFor="status" className="form-label">Estado</label>
-                                    <select className="form-select" {...formik.getFieldProps('status')}>
-                                        <option value="">-</option>
-                                        <option value="todo">Por Hacer</option>
-                                        <option value="in_progress">En Progreso</option>
-                                        <option value="review">Revisión</option>
-                                        <option value="done">Hecho</option>
-                                    </select>
-                                    {formik.touched.status && formik.errors.status && (
-                                        <small className="text-danger">{formik?.errors?.status}</small>
-                                    )}
-                                </div>
-
-                                <div className="mb-3">
-                                    <label htmlFor="priority" className="form-label">Prioridad</label>
-                                    <select className="form-select" {...formik.getFieldProps('priority')}>
-                                        <option value="">-</option>
-                                        <option value="low">Baja</option>
-                                        <option value="medium">Media</option>
-                                        <option value="high">Alta</option>
-                                    </select>
-                                    {formik.touched.priority && formik.errors.priority && (
-                                        <small className="text-danger">{formik?.errors?.priority}</small>
-                                    )}
-                                </div>
+                                <InputSelect id="status" label="Estado" formik={formik} options={[
+                                    {value: "todo", label: "Por Hacer"},
+                                    {value: "in_progress", label: "En Progreso"},
+                                    {value: "review", label: "Revisión"},
+                                    {value: "done", label: "Hecho"},
+                                ]}/>
+                                <InputSelect id="priority" label="Prioridad" formik={formik} options={[
+                                    {value: "low", label: "Baja"},
+                                    {value: "medium", label: "Media"},
+                                    {value: "high", label: "Alta"},
+                                ]}/>
                                 <InputSearch
                                     id="assignedTo"
                                     label="Asignado a"
