@@ -1,4 +1,12 @@
-import { Body, Controller, Post, UseGuards, Req, Get, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  Req,
+  Get,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 import { Request } from 'express';
 
@@ -6,7 +14,7 @@ import { AuthService } from '../services/auth.service';
 import { AuthGuard } from '../guards/auth.guard';
 import { RegisterDto } from '../dtos/register.dto';
 import { LoginDto } from '../dtos/login.dto';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiOperation } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -14,6 +22,11 @@ export class AuthController {
 
   @Post('refresh')
   @ApiOperation({ summary: 'Refrescar el token' })
+  @ApiHeader({
+    name: 'x-refresh-token',
+    description: 'Token de refresco',
+    required: true,
+  })
   async refreshToken(@Req() req: Request) {
     const refreshToken = req.headers['x-refresh-token']
       ?.toString()

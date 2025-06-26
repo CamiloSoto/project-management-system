@@ -7,11 +7,13 @@ import * as yup from 'yup';
 import InputSelect from "../inputs/InputSelect";
 import InputText from "../inputs/InputText";
 import useUser from "../../hooks/useUser";
+import validateHttpError from "../../helpers/http-errors.ts";
+import {successAlert} from "../../helpers/alert.helper.ts";
 
 const UserModal = () => {
     const [show, setShow] = useState(false);
 
-    const {userSelected, setUserSelected} = useUser();
+    const {userSelected, setUserSelected, postUser, putUser} = useUser();
 
     const formik = useFormik({
         initialValues: {
@@ -34,11 +36,25 @@ const UserModal = () => {
             role: yup.string().required("campo requerido"),
             avatar: yup.string(),
         }),
-        onSubmit: async (values, {setSubmitting}) => {
-            console.log(values);
-            setSubmitting(false);
+        onSubmit: async (values: any, {setSubmitting}) => {
+            if (userSelected?._id) {
+                try {
+                    delete values?.password;
+                    await putUser({...values, _id: userSelected?._id});
+                    await successResponse("Usuario actualizado exitosamente", setSubmitting)
+                } catch (err: any) {
+                    await validateHttpError(err);
+                }
+            } else {
+                try {
+                    await postUser(values);
+                    await successResponse("Usuario creado exitosamente", setSubmitting)
+                } catch (err: any) {
+                    await validateHttpError(err);
+                }
+            }
         }
-    })
+    });
 
     useEffect(() => {
         if (userSelected?._id) {
@@ -52,6 +68,12 @@ const UserModal = () => {
             setShow(true);
         }
     }, [userSelected]);
+
+    const successResponse = async (msg: string, setSubmitting: any) => {
+        await successAlert(msg);
+        setSubmitting(false);
+        handleClose();
+    }
 
     const handleRemove = () => {
         console.log(userSelected);
