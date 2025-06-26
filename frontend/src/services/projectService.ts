@@ -40,3 +40,13 @@ export const updateProject = async (project: any, id: string) => {
         throw error;
     }
 }
+
+export const removeProject = async (id: string) => {
+    try {
+        axiosInterceptor();
+        const response = await axiosClient.delete(`/projects/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}

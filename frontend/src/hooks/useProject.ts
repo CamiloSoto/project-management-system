@@ -1,6 +1,12 @@
 import {useDispatch, useSelector} from "react-redux";
 
-import {findAllProjectList, findProjectById, createProject, updateProject} from "../services/projectService";
+import {
+    findAllProjectList,
+    findProjectById,
+    createProject,
+    updateProject,
+    removeProject
+} from "../services/projectService";
 import {loadProjectList, loadProjectSelected} from "../slices/projectSlice"
 
 const useProject = () => {
@@ -17,11 +23,9 @@ const useProject = () => {
         }
     }
 
-    const getProjectById = async (projectId: string) => {
+    const getProjectById = (projectId: string) => {
         try {
-            const record = await findProjectById(projectId);
-            dispatch(loadProjectSelected(record));
-            return record;
+            findProjectById(projectId).then((record: any) => dispatch(loadProjectSelected(record)));
         } catch (error) {
             throw error;
         }
@@ -47,6 +51,16 @@ const useProject = () => {
         }
     }
 
+    const deleteProject = async (id: string) => {
+        try {
+            const record = await removeProject(id);
+            await getProjectList();
+            return record;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     const setProjectSelected = (project: any) => {
         dispatch(loadProjectSelected(project));
     }
@@ -58,7 +72,8 @@ const useProject = () => {
         getProjectList,
         getProjectById,
         setProjectSelected,
-        putProject
+        putProject,
+        deleteProject
     }
 }
 
