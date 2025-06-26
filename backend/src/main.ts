@@ -8,6 +8,8 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors();
+
   const config = new DocumentBuilder()
     .setTitle('Backend - Prueba Técnica Camilo Soto')
     .setDescription('API para la gestión de proyectos, tareas y usuarios')
