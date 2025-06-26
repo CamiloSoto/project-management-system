@@ -1,0 +1,41 @@
+name: Fullstack CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  backend-tests:
+    name: Run Backend Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - run: npm install
+      - run: npm run test
+
+  deploy-frontend:
+    name: Deploy Frontend to Vercel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./frontend
+          prod: true
+
+  deploy-backend:
+    name: Deploy Backend to Render
+    needs: [backend-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy Hook
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
