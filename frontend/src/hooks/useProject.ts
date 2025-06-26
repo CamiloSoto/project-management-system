@@ -14,10 +14,9 @@ const useProject = () => {
 
     const {projectList, projectSelected} = useSelector((state: any) => state.project);
 
-    const getProjectList = async () => {
+    const getProjectList = (params = {}) => {
         try {
-            const result = await findAllProjectList();
-            dispatch(loadProjectList(result));
+            findAllProjectList(params).then((result: any) => dispatch(loadProjectList(result)));
         } catch (error) {
             throw error;
         }

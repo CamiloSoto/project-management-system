@@ -11,14 +11,16 @@ interface Props {
     label?: string;
     formik: any;
     options: Option[];
+    placeholder?: string;
 }
-const InputSelect: React.FC<Props> = ({id, label = "", formik, options}) => {
+
+const InputSelect: React.FC<Props> = ({id, label = "", formik, options, placeholder = ""}) => {
     return (
         <>
             <div className="mb-3">
-                <label htmlFor={id} className="form-label">{label}</label>
+                {label && <label htmlFor={id} className="form-label">{label}</label>}
                 <select className="form-select" {...formik.getFieldProps(id)}>
-                    <option value="" disabled>-</option>
+                    <option value="" disabled>{placeholder ? placeholder : "-"}</option>
                     {options.map((option: Option, i: number) => (
                         <option key={i} value={option.value}>{option.label}</option>
                     ))}

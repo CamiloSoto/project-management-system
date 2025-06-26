@@ -8,9 +8,9 @@ const useTask = () => {
 
     const {taskSelected, taskList} = useSelector((state: any) => state.task);
 
-    const getTaskListByProject = (projectId: string) => {
+    const getTaskListByProject = (projectId: string, params = {}) => {
         try {
-            findAllTasksByProject(projectId).then((res: any) => dispatch(loadTaskList(res)));
+            findAllTasksByProject(projectId, params).then((res: any) => dispatch(loadTaskList(res)));
         } catch (error) {
             return [];
         }
