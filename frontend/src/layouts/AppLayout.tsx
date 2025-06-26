@@ -3,7 +3,7 @@ import useAuth from "../hooks/useAuth";
 
 const AppLayout = () => {
 
-    const {logout} = useAuth();
+    const {logout, user} = useAuth();
 
     return (
         <>
@@ -20,9 +20,12 @@ const AppLayout = () => {
                             <li className="nav-item">
                                 <Link className="nav-link" to="/app/projects">Proyectos</Link>
                             </li>
-                            <li className="nav-item">
-                                <Link className="nav-link" to="/app/users">Usuarios</Link>
-                            </li>
+                            {
+                                user?.role === "admin" &&
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/app/users">Usuarios</Link>
+                                </li>
+                            }
                             <li className="nav-item">
                                 <a className="nav-link" onClick={logout}>Cerrar sesión</a>
                             </li>

@@ -1,12 +1,22 @@
-import useUser from "../../hooks/useUser";
+import {useNavigate} from "react-router-dom";
 import {useEffect} from "react";
 
 import UserTable from "../../components/tables/UserTable";
-import UserModal from "../../components/modals/UserModal.tsx";
+import UserModal from "../../components/modals/UserModal";
+import useUser from "../../hooks/useUser";
+import useAuth from "../../hooks/useAuth";
 
 const UsersPage = () => {
-
     const {getUserList} = useUser();
+    const {user} = useAuth();
+    const navigate = useNavigate();
+
+
+    useEffect(() => {
+        if (user && user.role !== "admin") {
+            navigate("/app/projects");
+        }
+    }, [user, navigate]);
 
     useEffect(() => getUserList, []);
     return (
