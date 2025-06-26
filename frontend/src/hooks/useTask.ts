@@ -8,10 +8,9 @@ const useTask = () => {
 
     const {taskSelected, taskList} = useSelector((state: any) => state.task);
 
-    const getTaskListByProject = async (projectId: string) => {
+    const getTaskListByProject = (projectId: string) => {
         try {
-            const result = await findAllTasksByProject(projectId);
-            dispatch(loadTaskList(result?.data));
+            findAllTasksByProject(projectId).then((res: any) => dispatch(loadTaskList(res)));
         } catch (error) {
             return [];
         }
@@ -20,10 +19,10 @@ const useTask = () => {
     const postTask = async (task: any, projectId: string) => {
         try {
             const record = await createTask(task);
-            await getTaskListByProject(projectId);
+            getTaskListByProject(projectId);
             return record;
         } catch (error) {
-            return null;
+            throw error;
         }
     }
 
@@ -31,7 +30,7 @@ const useTask = () => {
         try {
             await updateTask(task);
         } catch (error) {
-            return null;
+            throw error;
         }
     }
 

@@ -47,7 +47,7 @@ const useProject = () => {
         }
     }
 
-    const setProjectSelected = async (project: any) => {
+    const setProjectSelected = (project: any) => {
         dispatch(loadProjectSelected(project));
     }
 

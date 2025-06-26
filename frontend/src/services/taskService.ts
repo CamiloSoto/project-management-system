@@ -2,7 +2,8 @@ import axiosClient from "../config/axiosClient";
 
 export const findAllTasksByProject = async (projectId: string) => {
     try {
-        return await axiosClient.get(`/tasks/projects/${projectId}/tasks`);
+        const res = await axiosClient.get(`/tasks/projects/${projectId}/tasks`);
+        return res.data;
     } catch (error) {
         throw error;
     }

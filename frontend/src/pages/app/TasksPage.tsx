@@ -44,7 +44,7 @@ const TasksPage = () => {
     }, []);
 
     useEffect(() => {
-        if (taskList.length > 0) {
+        if (taskList?.length > 0) {
             const grouped: Record<string, any[]> = {
                 todo: [],
                 in_progress: [],
@@ -73,6 +73,8 @@ const TasksPage = () => {
 
         const taskBody = {
             ...draggedTask,
+            assignedTo: draggedTask.assignedTo?._id,
+            projectId: draggedTask.projectId?._id,
             status,
         };
 
