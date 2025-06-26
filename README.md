@@ -20,7 +20,7 @@ Plataforma web completa para la gestión de proyectos de desarrollo de software.
 
 ## ✨ Deploy
 
-* 🌐 **Frontend (Vercel)**: [https://gestor-proyectos.vercel.app](https://gestor-proyectos.vercel.app)
+* 🌐 **Frontend (Vercel)**: [https://pms-frontend-casv.vercel.app](https://pms-frontend-casv.vercel.app)
 * 🔗 **Backend (Render)**: [https://pms-backend-casv.onrender.com](https://pms-backend-casv.onrender.com)
 * 📡 **API Docs Swagger**: [https://pms-backend-casv.onrender.com/api](https://pms-backend-casv.onrender.com/api)
 
