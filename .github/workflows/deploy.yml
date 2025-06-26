@@ -23,20 +23,20 @@ jobs:
       - run: npm install
       - run: npm run test
 
-  deploy-frontend:
-    name: Deploy Frontend to Vercel
-    needs: [backend-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
-          working-directory: ./frontend
+#  deploy-frontend:
+#    name: Deploy Frontend to Vercel
+#    needs: [backend-tests]
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#
+#      - uses: amondnet/vercel-action@v25
+#        with:
+#          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+#          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+#          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+#          vercel-args: '--prod'
+#          working-directory: ./frontend
 
   deploy-backend:
     name: Deploy Backend to Render

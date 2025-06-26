@@ -120,6 +120,10 @@ const ProjectModal: React.FC<Props> = ({projectId}) => {
         setShow(false);
     }
 
+    const removeProject = async () => {
+        console.log("removeProject", projectId);
+    }
+
     return (
         <>
             <Button variant="primary" onClick={() => setShow(true)}>
@@ -181,7 +185,14 @@ const ProjectModal: React.FC<Props> = ({projectId}) => {
                                 <InputText id="startDate" label="Fecha inicio" type="date" formik={formik}/>
                                 <InputText id="endDate" label="Fecha fin" type="date" formik={formik}/>
                             </Card.Body>
-                            <Card.Footer className="d-flex justify-content-end">
+                            <Card.Footer className="d-flex justify-content-end gap-3">
+                                {
+                                    projectId ?
+                                        <Button variant="danger" type="button" onClick={removeProject}>
+                                            Eliminar
+                                        </Button> : null
+
+                                }
                                 <Button variant="secondary" type="submit" disabled={formik.isSubmitting}>
                                     Guardar
                                 </Button>
